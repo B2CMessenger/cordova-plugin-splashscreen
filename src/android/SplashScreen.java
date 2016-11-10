@@ -135,6 +135,10 @@ public class SplashScreen extends CordovaPlugin {
         return fadeSplashScreenDuration;
     }
 
+    private boolean isForceFullScreen() {
+        return preferences.getBoolean("SplashForceFullScreen", false);
+    }
+
     @Override
     public void onPause(boolean multitasking) {
         if (HAS_BUILT_IN_SPLASH_SCREEN) {
@@ -313,6 +317,21 @@ public class SplashScreen extends CordovaPlugin {
                     splashDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                             WindowManager.LayoutParams.FLAG_FULLSCREEN);
                 }
+                
+                if (isForceFullScreen()) { 
+                    splashDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+                    splashDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                              WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                    
+                    int uiOptions = 
+                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN;
+            
+                    splashDialog.getWindow().getDecorView().setSystemUiVisibility(uiOptions);
+                }
+                
                 splashDialog.setContentView(splashImageView);
                 splashDialog.setCancelable(false);
                 splashDialog.show();
