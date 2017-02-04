@@ -27,6 +27,7 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
+import android.os.Build;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -252,6 +253,7 @@ public class SplashScreen extends CordovaPlugin {
                         });
                     } else {
                         spinnerStop();
+                        
                         splashDialog.dismiss();
                         splashDialog = null;
                         splashImageView = null;
@@ -311,25 +313,26 @@ public class SplashScreen extends CordovaPlugin {
 
                 // Create and show the dialog
                 splashDialog = new Dialog(context, android.R.style.Theme_Translucent_NoTitleBar);
-                // check to see if the splash screen should be full screen
-                if ((cordova.getActivity().getWindow().getAttributes().flags & WindowManager.LayoutParams.FLAG_FULLSCREEN)
-                        == WindowManager.LayoutParams.FLAG_FULLSCREEN) {
-                    splashDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                            WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                }
                 
-                if (isForceFullScreen()) { 
-                    splashDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+                
+                if (isForceFullScreen()) {
                     splashDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                               WindowManager.LayoutParams.FLAG_FULLSCREEN);
                     
-                    int uiOptions = 
-                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN;
-            
-                    splashDialog.getWindow().getDecorView().setSystemUiVisibility(uiOptions);
+                    if(Build.VERSION.SDK_INT < 24) {
+                        int uiOptions = 
+                            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN;
+                
+                        splashDialog.getWindow().getDecorView().setSystemUiVisibility(uiOptions);
+                    }
+                } else if ((cordova.getActivity().getWindow().getAttributes().flags & WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                        == WindowManager.LayoutParams.FLAG_FULLSCREEN) {
+                    // check to see if the splash screen should be full screen
+                    splashDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                            WindowManager.LayoutParams.FLAG_FULLSCREEN);
                 }
                 
                 splashDialog.setContentView(splashImageView);
